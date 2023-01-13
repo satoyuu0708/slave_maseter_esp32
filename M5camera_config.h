@@ -1,3 +1,4 @@
+#include "sensor.h"
 
 #define PWDN_GPIO_NUM     -1
 #define RESET_GPIO_NUM    15
@@ -38,7 +39,7 @@ void m5camera_config(){
   config.pin_pwdn = PWDN_GPIO_NUM;
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 20000000;
-  config.pixel_format = PIXFORMAT_RGB888;
+  config.pixel_format = PIXFORMAT_RGB565;
   config.frame_size = FRAMESIZE_96X96;
   config.fb_count = 1;
 
