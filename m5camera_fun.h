@@ -15,6 +15,7 @@ const uint16_t max_h_pix = 160 * 3;
 const uint16_t max_v_pix = 120;
 int rgb_16_line;
 int counter;
+const char frag = 'h';
 
 
 uint16_t Image_Buffer[32][32] = {
@@ -102,6 +103,13 @@ void camera_serial() {
 
 
       /////////////各RGB値を文字列に変換////////////////////////
+      ///送るデータにヘッダをつける
+      //最初に二次元配列をマスター側に送るのほうが理解しやすい
+      //まったく安定感がない
+      //最初にpみたいなフラグを送る
+      //そのあとにｘとｙ座標を（xとyをカウント）
+      //
+
 
 
       String r = String(red);
@@ -128,10 +136,13 @@ void camera_serial() {
       /*packer.write(r.toInt());
       packer.write(g.toInt());
       packer.write(b.toInt());*/
-
+      packer.write(frag);
       packer.write(red);
       packer.write(green);
       packer.write(blue);
+      packer.write(i);
+      packer.write(j);
+      delay(5);
 
 
       /////////////////////int型配列の32*32に入れる/////////////////
