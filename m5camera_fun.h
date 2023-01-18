@@ -11,11 +11,15 @@ esp_err_t res = ESP_OK;
 
 uint8_t* test_buf = NULL;
 uint8_t red = 0, green = 0, blue = 0;
-const uint16_t max_h_pix = 160 * 3;
-const uint16_t max_v_pix = 120;
+const uint16_t max_h_pix = 32;
+const uint16_t max_v_pix = 32;
 int rgb_16_line;
 int counter;
 const char frag = 'h';
+
+int red_sum[32][32];
+int green_sum = 0;
+int blue_sum = 0;
 
 
 uint16_t Image_Buffer[32][32] = {
@@ -100,6 +104,7 @@ void camera_serial() {
       red = *(test_buf + j * max_h_pix + i);
       green = *(test_buf + j * max_h_pix + (i + 1));
       blue = *(test_buf + j * max_h_pix + (i + 2));
+       
 
 
       /////////////各RGB値を文字列に変換////////////////////////
@@ -108,54 +113,44 @@ void camera_serial() {
       //まったく安定感がない
       //最初にpみたいなフラグを送る
       //そのあとにｘとｙ座標を（xとyをカウント）
-      //
+      
 
 
 
-      String r = String(red);
-      String g = String(green);
-      String b = String(blue);
-      String rgb = "{" + r + "," + g + "," + b + "}";
-      String rgb_16 = r + g + b;
-      //Serial.print("r = ");
-      //Serial.println(r);
+   
+      Serial.print(" r = ");
+      Serial.print(red);
+      Serial.print(" g = ");
+      Serial.print(green);
+      Serial.print(" b = ");
+      Serial.println(blue);
 
-      //Serial.print("rgb = ");
-      //Serial.println(rgb);
-
-      //Serial.print("rgb_16 = ");
-      //Serial.println(rgb_16);
-
-      //Serial.print("rgb_16_line = ");
-      //Serial.println(rgb_16_line);
-
-      int rgb_16_line = rgb_16.toInt();
+     
+      //int rgb_16_line = rgb_16.toInt();
 
       /////////////////////それぞれのRGB値をスレーブに送信/////////////////////
 
-      /*packer.write(r.toInt());
-      packer.write(g.toInt());
-      packer.write(b.toInt());*/
+   
+   
       packer.write(frag);
       packer.write(red);
       packer.write(green);
       packer.write(blue);
       packer.write(i);
       packer.write(j);
-      delay(5);
-
+      delay(1);
+    
 
       /////////////////////int型配列の32*32に入れる/////////////////
 
-      Image_Buffer[j][i] = rgb_16_line;
+      /*Image_Buffer[j][i] = rgb_16_line;
       Serial.print("Image_Buffer[");
       Serial.print(j);
       Serial.print("][");
       Serial.print(i);
       Serial.print("]=");
-      Serial.println(Image_Buffer[j][i]);
-      //packer.write(rgb_16_line);//データを送る量は3桁まで。それ以上長くなると数値がおかしくなる。
-
+      Serial.println(Image_Buffer[j][i]);*/
+ 
       packer.end();
       // now transmit the packed data
       Wire.beginTransmission(I2C_SLAVE_ADDR);
