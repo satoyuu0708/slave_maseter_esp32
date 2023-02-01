@@ -1,3 +1,4 @@
+#include "sys/_types.h"
 #include "soc/gpio_sig_map.h"
 #include "stdint.h"
 #include "HardwareSerial.h"
@@ -11,18 +12,19 @@ esp_err_t res = ESP_OK;
 
 uint8_t* test_buf = NULL;
 uint8_t red = 0, green = 0, blue = 0;
-const uint16_t max_h_pix = 32;
-const uint16_t max_v_pix = 32;
+const uint16_t max_h_pix = 160*3;
+const uint16_t max_v_pix = 120;
 int rgb_16_line;
 int counter;
 const char frag = 'h';
+const char n_frag = 'n';
 
 int red_sum[32][32];
 int green_sum = 0;
 int blue_sum = 0;
 
 
-uint16_t Image_Buffer[32][32] = {
+/*uint16_t Image_Buffer[32][32] = {
   //カメラ画像を格納する配列
   { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
   { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -59,7 +61,18 @@ uint16_t Image_Buffer[32][32] = {
 
 
 
-};
+};*/
+
+
+uint16_t Image_BufferR[32][32];
+uint16_t Image_BufferG[32][32];
+uint16_t Image_BufferB[32][32];
+int Rsum = 0;
+int Gsum = 0;
+int Bsum = 0;
+int Ravg = 0;
+int Gavg = 0;
+int Bavg = 0;
 
 
 
@@ -79,7 +92,7 @@ byte x = 0;
 
 void camera_serial() {
 
-  WirePacker packer;
+  //WirePacker packer;
 
 
 
@@ -91,65 +104,73 @@ void camera_serial() {
   ////////////////カメラからRGB値を取得する/////////////////////////
   //*test_bufポインタには、red, green, blue の各データが順番に格納*//
 
-  test_buf = fb->buf;
+  test_buf = fb->buf;//これが1フレームの画像データ
+  uint16_t*pos = (uint16_t*)fb->buf;
+
+  Serial.printf("width: %d, height: %d, buf: 0x%x, len: %d\n", fb->width, fb->height, fb->buf, fb->len);
+    //g_pub_sub_client.publish("test", fb->buf, fb->len);
+  esp_camera_fb_return(fb);
+  Serial.println(*pos);
+
+
+
+
+
 
   ///////////////////////////////////////////////////////////////
 
 
   ///////////////////32*32のピクセルに変換/////////////////////////
 
-  for (int j = 0; j < 32; j++) {    //縦
-    for (int i = 0; i < 32; i++) {  //横
-      WirePacker packer;
+  for (int j = 0; j <160; j++) {    //縦 //フレームサイズ160*120pixcel
+
+  
+    for (int i = 0; i < 120; i++) {  //横
+    WirePacker packer;
+      
       red = *(test_buf + j * max_h_pix + i);
       green = *(test_buf + j * max_h_pix + (i + 1));
       blue = *(test_buf + j * max_h_pix + (i + 2));
-       
+      uint8_t Rgb565 = (((red & 0b11111000)<<8) + ((green & 0b11111100)<<3)+(blue>>3));
+
+      String r = String(red);  //文字列に変換
+      String g = String(green);  //文字列に変換
+      String b = String(blue);  //文字列に変換
+      String RGB = r + g + b;
+      int rgb_set = RGB.toInt();    
+      String rgb_16 = String(rgb_set, HEX);  //16進数に変換
 
 
-      /////////////各RGB値を文字列に変換////////////////////////
-      ///送るデータにヘッダをつける
-      //最初に二次元配列をマスター側に送るのほうが理解しやすい
-      //まったく安定感がない
-      //最初にpみたいなフラグを送る
-      //そのあとにｘとｙ座標を（xとyをカウント）
+      Serial.print("[");  
+      Serial.print(Rgb565);//RGB565表示
+     // Serial.print(rgb_16);//16進数表示
+      Serial.print(",");
+    
       
 
 
-
-   
-      Serial.print(" r = ");
-      Serial.print(red);
-      Serial.print(" g = ");
-      Serial.print(green);
-      Serial.print(" b = ");
-      Serial.println(blue);
-
+      /*packer.write(frag);
+      
+      packer.write(red);
      
-      //int rgb_16_line = rgb_16.toInt();
+      packer.write(green);
+      
+      packer.write(blue);*/
+    
 
+    
+      
+     
+      //Serial.println(Rgb565);
+      
+
+  
       /////////////////////それぞれのRGB値をスレーブに送信/////////////////////
 
    
    
-      packer.write(frag);
-      packer.write(red);
-      packer.write(green);
-      packer.write(blue);
-      packer.write(i);
-      packer.write(j);
-      delay(1);
-    
-
-      /////////////////////int型配列の32*32に入れる/////////////////
-
-      /*Image_Buffer[j][i] = rgb_16_line;
-      Serial.print("Image_Buffer[");
-      Serial.print(j);
-      Serial.print("][");
-      Serial.print(i);
-      Serial.print("]=");
-      Serial.println(Image_Buffer[j][i]);*/
+      
+      
  
       packer.end();
       // now transmit the packed data
@@ -159,9 +180,11 @@ void camera_serial() {
       }
       Wire.endTransmission();  // stop transmitting*/
     }
-    //Serial.println();
+    //delay(10);
+    Serial.print("]");
+    Serial.println();
   }
-  Serial.println("------------------------------------------------------------");
+Serial.println("-----------------------------------------------------------------------");
 
   delay(1000);
 }

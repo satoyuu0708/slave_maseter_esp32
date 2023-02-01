@@ -34,8 +34,47 @@ void setup()
 void loop()
 {
 
-  camera_serial();
+  //camera_serial();
+
+  /*fb = esp_camera_fb_get();
+  if (!fb) {
+    Serial.println("Camera capture failed");
+    return;
+  }*/
+  ////////////////カメラからRGB値を取得する/////////////////////////
+  //*test_bufポインタには、red, green, blue の各データが順番に格納*//
+
+
+  //Serial.printf("width: %d, height: %d, buf: 0x%x, len: %d\n", fb->width, fb->height, fb->buf[0], fb->len);
+    //g_pub_sub_client.publish("test", fb->buf, fb->len);
+  //esp_camera_fb_return(fb);
+ 
+
+  /*camera_fb_t * fb = NULL;
+  fb = esp_camera_fb_get();
+  if (!fb && !(fb->len)) {
+    Serial.println("Camera capture failed");
+    return;
+  }
+  Serial.println(fb->width);
+  Serial.println(fb->height);
+  Serial.println(fb->len);
+
+  Serial.println(fb->buf[0]);
+  Serial.println("");
+  Serial.println(fb->buf[1]);
+  Serial.println("");
+  Serial.println(fb->buf[2]);
+  Serial.println("");
+
+  esp_camera_fb_return(fb);*/
+
+  
   //wire_m5camera();
 
-    
+  delay(1000);
+  
 }
+
+    
+

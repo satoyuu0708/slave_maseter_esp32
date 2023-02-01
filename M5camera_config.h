@@ -40,7 +40,7 @@ void m5camera_config(){
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_RGB565;
-  config.frame_size =  FRAMESIZE_96X96;
+  config.frame_size =  FRAMESIZE_QQVGA;
   config.fb_count = 1;
 
   // camera init
