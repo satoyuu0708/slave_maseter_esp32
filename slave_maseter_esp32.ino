@@ -12,7 +12,7 @@
 #include <Wire.h>
 #include <WirePacker.h>
 #include "esp_camera.h"
-#include "m5camera_fun.h"
+//#include "m5camera_fun.h"
 #include "M5camera_config.h"
 
 
@@ -34,7 +34,7 @@ void setup()
 void loop()
 {
 
-  //camera_serial();
+  camera_serial();
 
   /*fb = esp_camera_fb_get();
   if (!fb) {

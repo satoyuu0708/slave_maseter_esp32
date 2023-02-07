@@ -124,7 +124,7 @@ void camera_serial() {
 
   for (int j = 0; j <160; j++) {    //縦 //フレームサイズ160*120pixcel
 
-  
+  Serial.print("[");  
     for (int i = 0; i < 120; i++) {  //横
     WirePacker packer;
       
@@ -141,10 +141,21 @@ void camera_serial() {
       String rgb_16 = String(rgb_set, HEX);  //16進数に変換
 
 
-      Serial.print("[");  
+    
       Serial.print(Rgb565);//RGB565表示
      // Serial.print(rgb_16);//16進数表示
       Serial.print(",");
+
+
+
+      /*if(赤色のとき){
+
+        スマートステッカーに赤色の時に表示するコマンドを送信する
+         packer.write(frag);
+      }*/
+
+
+    
     
       
 
